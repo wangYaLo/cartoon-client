@@ -1,6 +1,6 @@
 <template>
   <div class='layout'>
-      123
+      123   
   </div>
 </template>
 
