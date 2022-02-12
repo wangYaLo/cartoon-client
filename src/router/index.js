@@ -1,22 +1,34 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Layout from '../layout'
+
 
 Vue.use(VueRouter)
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
+
+const modulesVoid = require.context('./modules', true, /\.js$/);
+const modulesFiles = require.context('./modules', true, /\.js$/).keys();
+const modulesobj = modulesFiles.reduce((modules, modulePath) => {
+  const moduleName = modulePath.replace(/^\.\/(.*)\.\w+$/, '$1');
+  const value = modulesVoid(modulePath);
+  modules = { ...modules, [moduleName]: value.default };
+  return modules;
+}, {});
+const modulesArray = [];
+for (const value in modulesobj) {
+  modulesArray.push(modulesobj[value]);
+}
+
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    name: 'Layout',
+    component: Layout,
+    children: [...modulesArray]
   }
 ]
 

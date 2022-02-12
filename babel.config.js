@@ -1,7 +1,12 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-env'
+      '@babel/preset-env',
+      {
+        useBuiltIns: 'usage', // 按需引入 polyfill
+        corejs: 3,
+        modules: false
+      }
     ]
   ],
   plugins: [
@@ -10,6 +15,12 @@ module.exports = {
       {
         corejs: 3
       }
+    ],
+    [
+      '@babel/proposal-class-properties'
+    ],
+    [
+      '@babel/proposal-object-rest-spread'
     ]
   ]
 }

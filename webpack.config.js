@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { DefinePlugin } = require('webpack');
+const { DefinePlugin, ProvidePlugin } = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
   },
   devtool: false,
   output: {
-      filename: '[name].js',
+      filename: 'js/[name].js',
       path: path.resolve(__dirname, 'dist'),
       clean: true,
       environment: {
@@ -36,7 +36,7 @@ module.exports = {
         {
             test: /\.js$/,
             exclude: /node_modules/, 
-            loader: 'babel-loader'
+            loader: 'babel-loader',
         },
         {
             test: /\.css$/,
@@ -65,7 +65,10 @@ module.exports = {
               },
               'postcss-loader',
               'sass-loader'
-            ]
+            ],
+            generator: {
+              filename: 'css/[name][ext]'
+            }
           },
           {
             test: /\.vue$/,
@@ -83,7 +86,7 @@ module.exports = {
             },
             parser: {
               dataUrlCondition: {
-                maxSize: 0
+                maxSize: 1024
               }
             }
           },
@@ -98,7 +101,7 @@ module.exports = {
   },
   plugins: [
       new HtmlWebpackPlugin({
-          title: '给爷爬1',
+          title: '给爷爬',
           template: './public/index.html'
       }),
       new CopyWebpackPlugin({
@@ -114,6 +117,15 @@ module.exports = {
       new DefinePlugin({
           BASE_URL: '"./"'
       }),
-      new VueLoaderPlugin()
-  ]
+      new VueLoaderPlugin(),
+      new ProvidePlugin({
+        'Buffer': 'buffer'
+      })
+  ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+    minimize: true,
+  }
 }
